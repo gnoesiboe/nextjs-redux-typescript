@@ -1,43 +1,72 @@
 import { NextFunctionComponent } from 'next';
-import { EventOverviewResponse } from '../api/response/types';
+import { EventOverviewItem } from '../api/response/types';
 import EventList from '../components/eventOverview/components/eventList';
 import EventListItem from '../components/eventOverview/components/eventListItem';
 import Head from '../components/meta/head';
-import { executeGetRequest } from '../api/client';
-import { apiEventOverviewPath } from '../api/urlGenerator';
-import * as cache from '../api/response/cache';
+import { connect } from 'react-redux';
+import { GlobalState, DispatchProp, Store } from '../globalState/types';
+import { createFetchEventsAction } from '../globalState/action/factory/eventsActionFactory';
+import { ExtendedNextContext } from '../hoc/withReduxStore';
 
-type Props = {
-    items: EventOverviewResponse;
+type ReduxSuppliedProps = {
+    events: EventOverviewItem[];
 };
 
-const Overview: NextFunctionComponent<Props> = ({ items }) => {
+type OwnProps = {};
+
+type CombinedProps = OwnProps & ReduxSuppliedProps & DispatchProp;
+
+const EventsOverview: NextFunctionComponent<
+    CombinedProps,
+    ReduxSuppliedProps,
+    ExtendedNextContext
+> = ({ events }) => {
     return (
         <div>
             <Head title="Events" />
             <h1>Event overview</h1>
             <EventList>
-                {items.map(item => (
-                    <EventListItem data={item} key={item.id} />
+                {events.map(event => (
+                    <EventListItem data={event} key={event.id} />
                 ))}
             </EventList>
         </div>
     );
 };
 
-Overview.getInitialProps = async function() {
-    const items = await cache.getOrCreate(
-        cache.CacheIdentifier.Events,
-        async () => {
-            const response = await executeGetRequest<EventOverviewResponse>(
-                apiEventOverviewPath
-            );
+function dispatchFetchAction(store: Store) {
+    // @ts-ignore -> typescript does not know we can dispatch thunk actions
+    return store.dispatch(createFetchEventsAction());
+}
 
-            return response.data;
-        }
-    );
+EventsOverview.getInitialProps = async function({ store }) {
+    const { events } = store.getState();
 
-    return { items };
+    if (Array.isArray(events)) {
+        // The store already contains event data, return that right away. We however
+        // still want to dispatch the action to get any new events that might exist
+        // on the server but are not here yet. But we don't want to await that request
+        // because we already have something to display.
+
+        dispatchFetchAction(store);
+
+        return { events };
+    }
+
+    return {
+        events: await dispatchFetchAction(store),
+    };
 };
 
-export default Overview;
+const mapGlobalStateToProps = ({ events }: GlobalState) => ({
+    events: events || [],
+});
+
+const withGlobalStateAccess = connect<
+    ReduxSuppliedProps,
+    {},
+    OwnProps,
+    GlobalState
+>(mapGlobalStateToProps);
+
+export default withGlobalStateAccess(EventsOverview);

@@ -1,34 +1,27 @@
 import React from 'react';
-import App, {
-    Container,
-    DefaultAppIProps,
-    AppProps,
-    NextAppContext,
-} from 'next/app';
+import App, { Container, DefaultAppIProps, AppProps } from 'next/app';
 import Layout from '../components/layout/layout';
+import { Provider as GlobalStateProvider } from 'react-redux';
+import { Store } from '../globalState/types';
+import withStore from '../hoc/withReduxStore';
 
-type CombinedProps = DefaultAppIProps & AppProps;
+type CombinedProps = DefaultAppIProps & AppProps & { store: Store };
 
-export default class MyApp extends App<CombinedProps> {
-    static async getInitialProps({ Component, ctx }: NextAppContext) {
-        let pageProps = {};
-
-        if (Component.getInitialProps) {
-            pageProps = await Component.getInitialProps(ctx);
-        }
-
-        return { pageProps };
-    }
-
+class MyApp extends App<CombinedProps> {
     render() {
-        const { Component, pageProps } = this.props;
+        const { Component, pageProps, store } = this.props;
 
         return (
             <Container>
-                <Layout>
-                    <Component {...pageProps} />
-                </Layout>
+                <GlobalStateProvider store={store}>
+                    <Layout>
+                        <Component {...pageProps} />
+                    </Layout>
+                </GlobalStateProvider>
             </Container>
         );
     }
 }
+
+// @ts-ignore
+export default withStore(MyApp);
