@@ -7,6 +7,9 @@ import { connect } from 'react-redux';
 import { GlobalState, DispatchProp, Store } from '../globalState/types';
 import { createFetchEventsAction } from '../globalState/action/factory/eventsActionFactory';
 import { ExtendedNextContext } from '../hoc/withReduxStore';
+import EventOverviewFiltering from '../components/eventOverviewFiltering/eventOverviewFiltering';
+import { useState, useCallback } from 'react';
+import { filterEvents } from './../components/eventOverview/utility/eventFilteringHelper';
 
 type ReduxSuppliedProps = {
     events: EventOverviewItem[];
@@ -21,12 +24,35 @@ const EventsOverview: NextFunctionComponent<
     ReduxSuppliedProps,
     ExtendedNextContext
 > = ({ events }) => {
+    const [currentGenre, setCurrentGenre] = useState<string | null>(null);
+    const [currentQuery, setCurrentQuery] = useState<string | null>(null);
+
+    const onGenreChangeCallback = useCallback(
+        (genre: string | null) => setCurrentGenre(genre),
+        []
+    );
+
+    const onQueryChangeCallback = useCallback(
+        (query: string | null) => setCurrentQuery(query),
+        []
+    );
+
+    const filteredEvents = filterEvents(events, currentGenre, currentQuery);
+
     return (
         <div>
             <Head title="Events" />
             <h1>Event overview</h1>
+            <EventOverviewFiltering
+                events={events}
+                onGenreChange={onGenreChangeCallback}
+                onQueryChange={onQueryChangeCallback}
+                currentGenre={currentGenre}
+                currentQuery={currentQuery}
+            />
             <EventList>
-                {events.map(event => (
+                <h3>{filteredEvents.length} events found</h3>
+                {filteredEvents.map(event => (
                     <EventListItem data={event} key={event.id} />
                 ))}
             </EventList>
