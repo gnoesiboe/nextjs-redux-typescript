@@ -40,9 +40,9 @@ function dispatchFetchAction(store: Store) {
 }
 
 EventsOverview.getInitialProps = async function({ store }) {
-    const { events } = store.getState();
+    const { events: preFetchedEvents } = store.getState();
 
-    if (Array.isArray(events)) {
+    if (Array.isArray(preFetchedEvents)) {
         // The store already contains event data, return that right away. We however
         // still want to dispatch the action to get any new events that might exist
         // on the server but are not here yet. But we don't want to await that request
@@ -50,11 +50,15 @@ EventsOverview.getInitialProps = async function({ store }) {
 
         dispatchFetchAction(store);
 
-        return { events };
+        return { events: preFetchedEvents };
     }
 
+    await dispatchFetchAction(store);
+
+    const justFetchedEvents = store.getState().events;
+
     return {
-        events: await dispatchFetchAction(store),
+        events: justFetchedEvents || [],
     };
 };
 

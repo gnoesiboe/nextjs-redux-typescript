@@ -1,19 +1,28 @@
 import { NextFunctionComponent } from 'next';
-import { withRouter } from 'next/router';
-import {
-    EventOverviewItem,
-    EventOverviewResponse,
-} from '../api/response/types';
-import * as cache from '../api/response/cache';
-import { executeGetRequest } from '../api/client';
-import { apiEventOverviewPath } from '../api/urlGenerator';
+import { withRouter, DefaultQuery } from 'next/router';
+import { EventOverviewItem } from '../api/response/types';
+import { DispatchProp, Store } from '../globalState/types';
+import { ExtendedNextContext } from '../hoc/withReduxStore';
+import { createFetchEventsAction } from '../globalState/action/factory/eventsActionFactory';
 
-type Props = {
-    data?: EventOverviewItem;
+type ReduxSuppliedProps = {
+    event?: EventOverviewItem;
 };
 
-const Event: NextFunctionComponent<Props> = ({ data }) => {
-    if (!data) {
+type OwnProps = {};
+
+type CombinedProps = OwnProps & ReduxSuppliedProps & DispatchProp;
+
+interface Query extends DefaultQuery {
+    id: string;
+}
+
+const Event: NextFunctionComponent<
+    CombinedProps,
+    ReduxSuppliedProps,
+    ExtendedNextContext<Query>
+> = ({ event }) => {
+    if (!event) {
         // @todo 404 response?
 
         return null;
@@ -21,18 +30,18 @@ const Event: NextFunctionComponent<Props> = ({ data }) => {
 
     return (
         <div>
-            {data && (
+            {event && (
                 <>
-                    <h1>{data.title}</h1>
-                    {data.images.map((src, index) => (
+                    <h1>{event.title}</h1>
+                    {event.images.map((src, index) => (
                         <img src={src} key={index} />
                     ))}
                     <div
                         dangerouslySetInnerHTML={{
-                            __html: data.description || '',
+                            __html: event.description || '',
                         }}
                     />
-                    <a href={data.url} target="_blank">
+                    <a href={event.url} target="_blank">
                         Ga naar website
                     </a>
                 </>
@@ -41,33 +50,37 @@ const Event: NextFunctionComponent<Props> = ({ data }) => {
     );
 };
 
-Event.getInitialProps = async function({ query }) {
-    if (!query || !query.id) {
-        return {};
+function dispatchFetchAction(store: Store) {
+    // @ts-ignore -> typescript does not know we can dispatch thunk actions
+    return store.dispatch(createFetchEventsAction());
+}
+
+Event.getInitialProps = async function({ query, store }) {
+    const id = parseInt(query.id, 10);
+
+    const { events: preFetchedEvents } = store.getState();
+
+    if (Array.isArray(preFetchedEvents)) {
+        const event = preFetchedEvents.find(
+            cursorEvent => cursorEvent.id === id
+        );
+
+        // The store already contains event data, return that right away. We however
+        // still want to dispatch the action to get any new events that might exist
+        // on the server but are not here yet. But we don't want to await that request
+        // because we already have something to display.
+        dispatchFetchAction(store);
+
+        return { event };
     }
 
-    const idAsString = query.id;
+    await dispatchFetchAction(store);
 
-    if (typeof idAsString !== 'string') {
-        return {};
-    }
+    const justFetchedEvents = store.getState().events;
 
-    const id = parseInt(idAsString, 10);
-
-    const allEvents = await cache.getOrCreate<EventOverviewResponse>(
-        cache.CacheIdentifier.Events,
-        async () => {
-            const response = await executeGetRequest<EventOverviewResponse>(
-                apiEventOverviewPath
-            );
-
-            return response.data;
-        }
-    );
-
-    const data = allEvents.find(cursorItem => cursorItem.id === id);
-
-    return { data };
+    return {
+        events: justFetchedEvents,
+    };
 };
 
 export default withRouter(Event);
