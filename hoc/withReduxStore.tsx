@@ -3,6 +3,7 @@ import { createStore } from '../globalState/store/storeFactory';
 import { Store, InitialGlobalState } from '../globalState/types';
 import { NextComponentClass, NextContext } from 'next';
 import { isServer } from '../utilities/contextHelper';
+import { DefaultQuery } from 'next/router';
 
 const STORE_WINDOW_CACHE_NAMESPACE: string = '__NEXT_REDUX_STORE__';
 
@@ -25,7 +26,8 @@ function getOrCreateStore(initialState: InitialGlobalState = {}): Store {
 
 type Props = { store: Store; initialReduxState: InitialGlobalState };
 
-export interface ExtendedNextContext extends NextContext {
+export interface ExtendedNextContext<Q extends DefaultQuery = DefaultQuery>
+    extends NextContext<Q> {
     store: Store;
 }
 
