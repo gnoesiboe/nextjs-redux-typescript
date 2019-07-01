@@ -4,6 +4,7 @@ import { EventOverviewItem } from '../api/response/types';
 import { DispatchProp, Store } from '../globalState/types';
 import { ExtendedNextContext } from '../hoc/withReduxStore';
 import { createFetchEventsAction } from '../globalState/action/factory/eventsActionFactory';
+import { isClientSide } from '../utilities/contextHelper';
 
 type ReduxSuppliedProps = {
     event?: EventOverviewItem;
@@ -69,7 +70,9 @@ Event.getInitialProps = async function({ query, store }) {
         // still want to dispatch the action to get any new events that might exist
         // on the server but are not here yet. But we don't want to await that request
         // because we already have something to display.
-        dispatchFetchAction(store);
+        if (isClientSide) {
+            dispatchFetchAction(store);
+        }
 
         return { event };
     }
@@ -78,9 +81,15 @@ Event.getInitialProps = async function({ query, store }) {
 
     const justFetchedEvents = store.getState().events;
 
-    return {
-        events: justFetchedEvents,
-    };
+    if (Array.isArray(justFetchedEvents)) {
+        const event = justFetchedEvents.find(
+            cursorEvent => cursorEvent.id === id
+        );
+
+        return { event };
+    }
+
+    return {};
 };
 
 export default withRouter(Event);

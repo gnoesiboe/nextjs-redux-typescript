@@ -10,6 +10,7 @@ import { ExtendedNextContext } from '../hoc/withReduxStore';
 import EventOverviewFiltering from '../components/eventOverviewFiltering/eventOverviewFiltering';
 import { useState, useCallback } from 'react';
 import { filterEvents } from './../components/eventOverview/utility/eventFilteringHelper';
+import { isClientSide } from '../utilities/contextHelper';
 
 type ReduxSuppliedProps = {
     events: EventOverviewItem[];
@@ -73,8 +74,9 @@ EventsOverview.getInitialProps = async function({ store }) {
         // still want to dispatch the action to get any new events that might exist
         // on the server but are not here yet. But we don't want to await that request
         // because we already have something to display.
-
-        dispatchFetchAction(store);
+        if (isClientSide) {
+            dispatchFetchAction(store);
+        }
 
         return { events: preFetchedEvents };
     }
