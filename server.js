@@ -15,14 +15,15 @@ const createResponseBody = async (request, response) => {
     );
 };
 
+const fileRequestHandler = (request, response) => handle(request, response);
+
 app.prepare()
     .then(() => {
         const server = express();
 
-        server.get('/_next/*', (request, response) => {
-            // serving _next static content using next.js handler, as they don't require caching
-            handle(request, response);
-        });
+        // serving _next static content and other assets using next.js handler, as they don't require caching
+        server.get('/_next/*', fileRequestHandler);
+        server.get('*.*', fileRequestHandler);
 
         server.get('/events/:id', async (request, response) => {
             const createAlternateResponseBody = async (request, response) => {
