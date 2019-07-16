@@ -6,6 +6,7 @@ import { ExtendedNextContext } from '../../hoc/withReduxStore';
 import { createFetchEventsAction } from '../../globalState/action/factory/eventsActionFactory';
 import { isClientSide } from '../../utilities/contextHelper';
 import Head from '../../components/meta/head';
+import { eventOverviewPath } from '../../routing/urlGenerator';
 
 type ReduxSuppliedProps = {
     event?: EventOverviewItem;
@@ -23,11 +24,9 @@ const Event: NextComponentType<
     ExtendedNextContext,
     ReduxSuppliedProps,
     CombinedProps
-> = ({ event }) => {
-    if (!event) {
-        // @todo 404 response?
-
-        return null;
+> = ({ event, router }) => {
+    if (isClientSide && !event) {
+        router.push(eventOverviewPath);
     }
 
     return (
@@ -58,7 +57,7 @@ function dispatchFetchAction(store: Store) {
     return store.dispatch(createFetchEventsAction());
 }
 
-Event.getInitialProps = async function({ query, store }) {
+Event.getInitialProps = async function({ query, store, res: response }) {
     if (typeof query.id !== 'string') {
         throw new Error('Expecting id parameter in query to be of type string');
     }
@@ -71,6 +70,10 @@ Event.getInitialProps = async function({ query, store }) {
         const event = preFetchedEvents.find(
             cursorEvent => cursorEvent.id === id
         );
+
+        if (!event && response) {
+            response.statusCode = 404;
+        }
 
         // The store already contains event data, return that right away. We however
         // still want to dispatch the action to get any new events that might exist
@@ -91,6 +94,10 @@ Event.getInitialProps = async function({ query, store }) {
         const event = justFetchedEvents.find(
             cursorEvent => cursorEvent.id === id
         );
+
+        if (!event && response) {
+            response.statusCode = 404;
+        }
 
         return { event };
     }
