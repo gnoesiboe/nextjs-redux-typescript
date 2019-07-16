@@ -4,10 +4,12 @@ import {
     eventOverviewPath,
 } from '../../routing/urlGenerator';
 import MenuItem from './menuItem';
-import { withRouter, WithRouterProps } from 'next/router';
-import { NextFunctionComponent } from 'next';
+import { withRouter, Router } from 'next/router';
+import { NextPageContext, NextComponentType } from 'next';
 
-type Props = WithRouterProps;
+type Props = {
+    router: Router;
+};
 
 const checkIsEventPath = (currentPath: string): boolean => {
     return (
@@ -15,7 +17,7 @@ const checkIsEventPath = (currentPath: string): boolean => {
     );
 };
 
-const Menu: NextFunctionComponent<Props> = ({ router }) => {
+const Menu: NextComponentType<NextPageContext, {}, Props> = ({ router }) => {
     const currentPath = typeof router !== 'undefined' ? router.pathname : '';
 
     return (

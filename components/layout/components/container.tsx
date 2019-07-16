@@ -1,11 +1,13 @@
 import React from 'react';
-import { NextFunctionComponent } from 'next';
+import { NextPageContext, NextComponentType } from 'next';
 
 type Props = {
     children: React.ReactNode | React.ReactNode[];
 };
 
-const Container: NextFunctionComponent<Props> = ({ children }) => (
+const Container: NextComponentType<NextPageContext, {}, Props> = ({
+    children,
+}) => (
     <div>
         {children}
         <style jsx>{`

@@ -1,17 +1,20 @@
-import { NextFunctionComponent } from 'next';
+import { NextComponentType, NextPageContext } from 'next';
 import Link from 'next/link';
 import { EventOverviewItem } from '../../../api/response/types';
-import { createEventDetailPath } from '../../../routing/urlGenerator';
+import {
+    createEventDetailPath,
+    eventDetailPagePath,
+} from '../../../routing/urlGenerator';
 
 type Props = {
     data: EventOverviewItem;
 };
 
-const EventListItem: NextFunctionComponent<Props> = ({
+const EventListItem: NextComponentType<NextPageContext, {}, Props> = ({
     data: { id, title, performer, genre, startsAt },
 }) => (
     <div>
-        <Link as={createEventDetailPath(id)} href={`/event?id=${id}`}>
+        <Link as={createEventDetailPath(id)} href={eventDetailPagePath}>
             <a>
                 <h4>{title}</h4>
             </a>

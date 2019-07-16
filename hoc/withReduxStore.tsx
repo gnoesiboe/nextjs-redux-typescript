@@ -1,9 +1,8 @@
 import React from 'react';
 import { createStore } from '../globalState/store/storeFactory';
 import { Store, InitialGlobalState } from '../globalState/types';
-import { NextComponentClass, NextContext } from 'next';
+import { NextComponentType, NextPageContext } from 'next';
 import { isServer } from '../utilities/contextHelper';
-import { DefaultQuery } from 'next/router';
 
 const STORE_WINDOW_CACHE_NAMESPACE: string = '__NEXT_REDUX_STORE__';
 
@@ -26,12 +25,11 @@ function getOrCreateStore(initialState: InitialGlobalState = {}): Store {
 
 type Props = { store: Store; initialReduxState: InitialGlobalState };
 
-export interface ExtendedNextContext<Q extends DefaultQuery = DefaultQuery>
-    extends NextContext<Q> {
+export interface ExtendedNextContext extends NextPageContext {
     store: Store;
 }
 
-const withStore = (Component: NextComponentClass<Props>) => {
+const withStore = (Component: NextComponentType<Props>) => {
     return class AppWithRedux extends React.Component<Props> {
         private store: Store;
 

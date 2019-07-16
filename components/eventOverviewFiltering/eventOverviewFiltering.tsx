@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { NextFunctionComponent } from 'next';
+import { NextComponentType, NextPageContext } from 'next';
 import { EventOverviewItem } from '../../api/response/types';
 import { resolveUsedGenres } from './utility/genreResolver';
 import GenreChoice from './components/GenreChoice';
@@ -12,7 +12,7 @@ type Props = {
     currentQuery: string | null;
 };
 
-const EventOverviewFiltering: NextFunctionComponent<Props> = ({
+const EventOverviewFiltering: NextComponentType<NextPageContext, {}, Props> = ({
     events,
     onGenreChange,
     onQueryChange,

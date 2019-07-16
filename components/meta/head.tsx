@@ -1,11 +1,11 @@
 import NextHead from 'next/head';
-import { NextFunctionComponent } from 'next';
+import { NextPageContext, NextComponentType } from 'next';
 
 type Props = {
     title?: string;
 };
 
-const Head: NextFunctionComponent<Props> = ({ title }) => (
+const Head: NextComponentType<NextPageContext, {}, Props> = ({ title }) => (
     <NextHead>
         <title>{title ? `${title} |` : ''} NextJS</title>
         <meta charSet="utf-8" />

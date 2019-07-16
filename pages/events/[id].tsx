@@ -1,10 +1,10 @@
-import { NextFunctionComponent } from 'next';
-import { withRouter, DefaultQuery } from 'next/router';
-import { EventOverviewItem } from '../api/response/types';
-import { DispatchProp, Store } from '../globalState/types';
-import { ExtendedNextContext } from '../hoc/withReduxStore';
-import { createFetchEventsAction } from '../globalState/action/factory/eventsActionFactory';
-import { isClientSide } from '../utilities/contextHelper';
+import { NextComponentType } from 'next';
+import { withRouter, Router } from 'next/router';
+import { EventOverviewItem } from '../../api/response/types';
+import { DispatchProp, Store } from '../../globalState/types';
+import { ExtendedNextContext } from '../../hoc/withReduxStore';
+import { createFetchEventsAction } from '../../globalState/action/factory/eventsActionFactory';
+import { isClientSide } from '../../utilities/contextHelper';
 
 type ReduxSuppliedProps = {
     event?: EventOverviewItem;
@@ -12,16 +12,16 @@ type ReduxSuppliedProps = {
 
 type OwnProps = {};
 
-type CombinedProps = OwnProps & ReduxSuppliedProps & DispatchProp;
+type CombinedProps = OwnProps &
+    ReduxSuppliedProps &
+    DispatchProp & {
+        router: Router;
+    };
 
-interface Query extends DefaultQuery {
-    id: string;
-}
-
-const Event: NextFunctionComponent<
-    CombinedProps,
+const Event: NextComponentType<
+    ExtendedNextContext,
     ReduxSuppliedProps,
-    ExtendedNextContext<Query>
+    CombinedProps
 > = ({ event }) => {
     if (!event) {
         // @todo 404 response?
@@ -57,6 +57,10 @@ function dispatchFetchAction(store: Store) {
 }
 
 Event.getInitialProps = async function({ query, store }) {
+    if (typeof query.id !== 'string') {
+        throw new Error('Expecting id parameter in query to be of type string');
+    }
+
     const id = parseInt(query.id, 10);
 
     const { events: preFetchedEvents } = store.getState();

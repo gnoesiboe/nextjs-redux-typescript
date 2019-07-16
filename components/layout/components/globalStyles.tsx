@@ -1,6 +1,6 @@
-import { NextFunctionComponent } from 'next';
+import { NextComponentType } from 'next';
 
-const GlobalStyles: NextFunctionComponent = () => (
+const GlobalStyles: NextComponentType = () => (
     <style global={true} jsx={true}>{`
         body {
             background: #6d2727;

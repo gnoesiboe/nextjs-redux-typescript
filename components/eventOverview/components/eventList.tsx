@@ -1,11 +1,11 @@
 import { Children } from 'react';
-import { NextFunctionComponent } from 'next';
+import { NextComponentType } from 'next';
 
 type Props = {
     children: React.ReactNode[];
 };
 
-const EventList: NextFunctionComponent<Props> = ({ children }) => (
+const EventList: NextComponentType<Props> = ({ children }) => (
     <>
         <ul>
             {Children.map(children, (child, index) => (

@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { NextFunctionComponent } from 'next';
+import { NextPageContext, NextComponentType } from 'next';
 
 type Props = {
     href: string;
@@ -8,7 +8,11 @@ type Props = {
     children: string;
 };
 
-const MenuItem: NextFunctionComponent<Props> = ({ href, active, children }) => (
+const MenuItem: NextComponentType<NextPageContext, {}, Props> = ({
+    href,
+    active,
+    children,
+}) => (
     <>
         <Link href={href}>
             <a>{children}</a>

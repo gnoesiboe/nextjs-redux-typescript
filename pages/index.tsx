@@ -1,7 +1,7 @@
 import Head from '../components/meta/head';
-import { NextFunctionComponent } from 'next';
+import { NextPage } from 'next';
 
-const Home: NextFunctionComponent = () => (
+const Home: NextPage = () => (
     <>
         <Head title="Home" />
         <h1>Home</h1>

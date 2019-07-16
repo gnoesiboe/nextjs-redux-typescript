@@ -1,5 +1,5 @@
 import React from 'react';
-import { NextFunctionComponent } from 'next';
+import { NextComponentType, NextPageContext } from 'next';
 import { GenreMap } from '../utility/genreResolver';
 
 type OnChangeCallback = (event: React.ChangeEvent<HTMLSelectElement>) => void;
@@ -10,7 +10,7 @@ type Props = {
     currentValue: string | null;
 };
 
-const GenreChoice: NextFunctionComponent<Props> = ({
+const GenreChoice: NextComponentType<NextPageContext, {}, Props> = ({
     genres,
     onChange,
     currentValue,

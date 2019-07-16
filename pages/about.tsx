@@ -1,7 +1,7 @@
-import { NextFunctionComponent } from 'next';
+import { NextPage } from 'next';
 import Head from '../components/meta/head';
 
-const About: NextFunctionComponent = () => (
+const About: NextPage = () => (
     <>
         <Head title="About" />
         <h1>About</h1>

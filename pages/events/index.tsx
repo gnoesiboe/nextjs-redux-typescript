@@ -1,16 +1,16 @@
-import { NextFunctionComponent } from 'next';
-import { EventOverviewItem } from '../api/response/types';
-import EventList from '../components/eventOverview/components/eventList';
-import EventListItem from '../components/eventOverview/components/eventListItem';
-import Head from '../components/meta/head';
+import { NextComponentType } from 'next';
+import { EventOverviewItem } from '../../api/response/types';
+import EventList from '../../components/eventOverview/components/eventList';
+import EventListItem from '../../components/eventOverview/components/eventListItem';
+import Head from '../../components/meta/head';
 import { connect } from 'react-redux';
-import { GlobalState, DispatchProp, Store } from '../globalState/types';
-import { createFetchEventsAction } from '../globalState/action/factory/eventsActionFactory';
-import { ExtendedNextContext } from '../hoc/withReduxStore';
-import EventOverviewFiltering from '../components/eventOverviewFiltering/eventOverviewFiltering';
+import { GlobalState, DispatchProp, Store } from '../../globalState/types';
+import { createFetchEventsAction } from '../../globalState/action/factory/eventsActionFactory';
+import { ExtendedNextContext } from '../../hoc/withReduxStore';
+import EventOverviewFiltering from '../../components/eventOverviewFiltering/eventOverviewFiltering';
 import { useState, useCallback } from 'react';
-import { filterEvents } from './../components/eventOverview/utility/eventFilteringHelper';
-import { isClientSide } from '../utilities/contextHelper';
+import { filterEvents } from '../../components/eventOverview/utility/eventFilteringHelper';
+import { isClientSide } from '../../utilities/contextHelper';
 
 type ReduxSuppliedProps = {
     events: EventOverviewItem[];
@@ -20,10 +20,10 @@ type OwnProps = {};
 
 type CombinedProps = OwnProps & ReduxSuppliedProps & DispatchProp;
 
-const EventsOverview: NextFunctionComponent<
-    CombinedProps,
+const EventsOverview: NextComponentType<
+    ExtendedNextContext,
     ReduxSuppliedProps,
-    ExtendedNextContext
+    CombinedProps
 > = ({ events }) => {
     const [currentGenre, setCurrentGenre] = useState<string | null>(null);
     const [currentQuery, setCurrentQuery] = useState<string | null>(null);
