@@ -5,6 +5,7 @@ import { DispatchProp, Store } from '../../globalState/types';
 import { ExtendedNextContext } from '../../hoc/withReduxStore';
 import { createFetchEventsAction } from '../../globalState/action/factory/eventsActionFactory';
 import { isClientSide } from '../../utilities/contextHelper';
+import Head from '../../components/meta/head';
 
 type ReduxSuppliedProps = {
     event?: EventOverviewItem;
@@ -31,6 +32,7 @@ const Event: NextComponentType<
 
     return (
         <div>
+            <Head title={event ? `${event.title} - Events` : 'Events'} />
             {event && (
                 <>
                     <h1>{event.title}</h1>
