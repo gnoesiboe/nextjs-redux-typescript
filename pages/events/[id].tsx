@@ -6,7 +6,7 @@ import { ExtendedNextContext } from '../../hoc/withReduxStore';
 import { createFetchEventsAction } from '../../globalState/action/factory/eventsActionFactory';
 import { isClientSide } from '../../utilities/contextHelper';
 import Head from '../../components/meta/head';
-import { eventOverviewPath } from '../../routing/urlGenerator';
+import { eventOverview as eventOverviewRoute } from '../../routing/urlGenerator';
 
 type ReduxSuppliedProps = {
     event?: EventOverviewItem;
@@ -26,7 +26,7 @@ const Event: NextComponentType<
     CombinedProps
 > = ({ event, router }) => {
     if (isClientSide && !event) {
-        router.push(eventOverviewPath);
+        router.push(eventOverviewRoute.path);
     }
 
     return (

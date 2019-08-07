@@ -1,10 +1,7 @@
 import { NextComponentType, NextPageContext } from 'next';
 import Link from 'next/link';
 import { EventOverviewItem } from '../../../api/response/types';
-import {
-    createEventDetailPath,
-    eventDetailPagePath,
-} from '../../../routing/urlGenerator';
+import { eventDetail as eventDetailRoute } from '../../../routing/urlGenerator';
 
 type Props = {
     data: EventOverviewItem;
@@ -14,7 +11,7 @@ const EventListItem: NextComponentType<NextPageContext, {}, Props> = ({
     data: { id, title, performer, genre, startsAt },
 }) => (
     <div>
-        <Link as={createEventDetailPath(id)} href={eventDetailPagePath}>
+        <Link as={eventDetailRoute.path(id)} href={eventDetailRoute.page}>
             <a>
                 <h4>{title}</h4>
             </a>

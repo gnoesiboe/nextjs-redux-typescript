@@ -1,7 +1,7 @@
 import {
-    homePath,
-    aboutPath,
-    eventOverviewPath,
+    home as homeRoute,
+    about as aboutRoute,
+    eventOverview as eventOverviewRoute,
 } from '../../routing/urlGenerator';
 import MenuItem from './menuItem';
 import { withRouter, Router } from 'next/router';
@@ -13,7 +13,8 @@ type Props = {
 
 const checkIsEventPath = (currentPath: string): boolean => {
     return (
-        currentPath === eventOverviewPath || currentPath.includes('/event', 0)
+        currentPath === eventOverviewRoute.path ||
+        currentPath.includes('/events', 0)
     );
 };
 
@@ -37,13 +38,16 @@ const Menu: NextComponentType<NextPageContext, {}, Props> = ({ router }) => {
             `}</style>
             <ul>
                 <li>
-                    <MenuItem href={homePath} active={currentPath === homePath}>
+                    <MenuItem
+                        href={homeRoute.page}
+                        active={currentPath === homeRoute.path}
+                    >
                         Home
                     </MenuItem>
                 </li>
                 <li>
                     <MenuItem
-                        href={eventOverviewPath}
+                        href={eventOverviewRoute.page}
                         active={checkIsEventPath(currentPath)}
                     >
                         Events
@@ -51,8 +55,8 @@ const Menu: NextComponentType<NextPageContext, {}, Props> = ({ router }) => {
                 </li>
                 <li>
                     <MenuItem
-                        href={aboutPath}
-                        active={currentPath === aboutPath}
+                        href={aboutRoute.page}
+                        active={currentPath === aboutRoute.path}
                     >
                         About
                     </MenuItem>
