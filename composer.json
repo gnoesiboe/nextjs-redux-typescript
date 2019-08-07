@@ -1,0 +1,17 @@
+{
+    "name": "freshheads/nextjs-boilerplate",
+    "description": "Freshheads NextJS boilerplate",
+    "type": "project",
+    "require-dev": {
+        "deployer/deployer": "^6.0"
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "git@github.com:freshheads/deployer-recipes.git"
+        }
+    ],
+    "require": {
+        "freshheads/deployer-recipes": "^2.1"
+    }
+}
